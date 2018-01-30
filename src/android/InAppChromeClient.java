@@ -30,6 +30,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.GeolocationPermissions.Callback;
+import android.view.View;       // ***** HTML5 Video play in Fullscreen patch ***** //
 
 public class InAppChromeClient extends WebChromeClient {
 
@@ -130,4 +131,15 @@ public class InAppChromeClient extends WebChromeClient {
         return false;
     }
 
+    // ***** HTML5 Video play in Fullscreen patch ***** >
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+        callback.onCustomViewHidden();
+    }
+    
+    @Override
+    public void onHideCustomView() {
+        super.onHideCustomView();
+    }
+    // < ***** HTML5 Video play in Fullscreen patch *****
 }
