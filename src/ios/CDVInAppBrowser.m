@@ -648,13 +648,56 @@
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
+    // ***** display title patch ***** >
+    self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelInset, locationBarY, self.view.bounds.size.width - labelInset, LOCATIONBAR_HEIGHT)];
+    self.titleLabel.adjustsFontSizeToFitWidth = NO;
+    self.titleLabel.alpha = 1.000;
+    self.titleLabel.autoresizesSubviews = YES;
+    self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.titleLabel.backgroundColor = [UIColor clearColor];
+    self.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+    self.titleLabel.clearsContextBeforeDrawing = YES;
+    self.titleLabel.clipsToBounds = YES;
+    self.titleLabel.contentMode = UIViewContentModeScaleToFill;
+    self.titleLabel.enabled = YES;
+    self.titleLabel.hidden = NO;
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+    if ([self.titleLabel respondsToSelector:NSSelectorFromString(@"setMinimumScaleFactor:")]) {
+        [self.titleLabel setValue:@(10.0/[UIFont labelFontSize]) forKey:@"minimumScaleFactor"];
+    } else if ([self.titleLabel respondsToSelector:NSSelectorFromString(@"setMinimumFontSize:")]) {
+        [self.titleLabel setValue:@(10.0) forKey:@"minimumFontSize"];
+    }
+
+    self.titleLabel.multipleTouchEnabled = NO;
+    self.titleLabel.numberOfLines = 1;
+    self.titleLabel.opaque = NO;
+    self.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
+    self.titleLabel.text = NSLocalizedString(@"Loading...", nil);
+    // self.titleLabel.textAlignment = NSTextAlignmentLeft;
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.titleLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
+    self.titleLabel.userInteractionEnabled = NO;
+    self.titleLabel.frame = CGRectMake(10, 0, self.view.frame.size.width-120, 39);
+    
+    UIBarButtonItem *navigationtitle=[[UIBarButtonItem alloc] initWithCustomView:self.titleLabel];
+
     // Filter out Navigation Buttons if user requests so
     if (_browserOptions.hidenavigationbuttons) {
-      [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+        if (_browserOptions.showtitle) {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, navigationtitle, flexibleSpaceButton]];
+        } else {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+        }
     } else {
-      [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+        if (_browserOptions.showtitle) {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, navigationtitle, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+        } else {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+        }
     }
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+    // [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+    // < ***** display title patch *****
 
     self.view.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.toolbar];
@@ -934,6 +977,15 @@
     self.addressLabel.text = [self.currentURL absoluteString];
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
+    // ***** display title patch ***** >
+    if (_browserOptions.showtitle) {
+        if (_browserOptions.titlecaption != nil) {
+            self.titleLabel.text = _browserOptions.titlecaption;
+        } else {
+            self.titleLabel.text = [theWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
+        }
+    }
+    // < ***** display title patch *****
 
     [self.spinner stopAnimating];
 
@@ -1024,6 +1076,8 @@
         self.closebuttoncolor = nil;
         self.toolbarcolor = nil;
         self.toolbartranslucent = YES;
+        self.showtitle = NO;        // ***** display title patch ***** //
+        self.titlecaption = nil;    // ***** display title patch ***** //
     }
 
     return self;
