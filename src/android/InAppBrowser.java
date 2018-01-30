@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;  // ***** display title patch ***** //
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -105,8 +106,11 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String HIDE_URL = "hideurlbar";
     private static final String FOOTER = "footer";
     private static final String FOOTER_COLOR = "footercolor";
+    private static final String SHOW_TITLE = "showtitle";       // ***** display title patch ***** //
+    private static final Boolean DEFAULT_SHOW_TITLE = false;    // ***** display title patch ***** //
+    private static final String TITLE_CAPTION = "titlecaption"; // ***** display title patch ***** //
 
-    private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
+    private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR, TITLE_CAPTION);  // ***** display title patch ***** //
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -133,6 +137,8 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean hideUrlBar = false;
     private boolean showFooter = false;
     private String footerColor = "";
+    private boolean showTitle = false;      // ***** display title patch ***** //
+    private String titleCaption = "";      // ***** display title patch ***** //
 
     /**
      * Executes the request and returns PluginResult.
@@ -567,6 +573,19 @@ public class InAppBrowser extends CordovaPlugin {
                 String hideUrl = features.get(HIDE_URL);
                 if(hideNavigation != null) hideNavigationButtons = hideNavigation.equals("yes") ? true : false;
                 if(hideUrl != null) hideUrlBar = hideUrl.equals("yes") ? true : false;
+                
+                // ***** display title patch ***** >
+                String showTitleSet = features.get(SHOW_TITLE);
+                if (showTitleSet != null) {
+                    showTitle = showTitleSet.equals("yes") ? true : false;
+                } else {
+                    showTitle = DEFAULT_SHOW_TITLE;
+                }
+                String titleCaptionSet = features.get(TITLE_CAPTION);
+                if (titleCaptionSet != null) {
+                    titleCaption = titleCaptionSet;
+                }
+                // < ***** display title patch *****
             }
             String zoom = features.get(ZOOM);
             if (zoom != null) {
@@ -790,7 +809,18 @@ public class InAppBrowser extends CordovaPlugin {
                 edittext.setLayoutParams(textLayoutParams);
                 edittext.setId(Integer.valueOf(4));
                 edittext.setSingleLine(true);
-                edittext.setText(url);
+                // ***** display title patch ***** >
+                if (showTitle) {
+                    edittext.setGravity(Gravity.CENTER);
+                    edittext.setBackgroundColor(android.graphics.Color.TRANSPARENT);    // Remove the Underline from Android TextInputs
+                    edittext.setEllipsize(TextUtils.TruncateAt.END);
+                    if (hideNavigationButtons) {
+                        edittext.setPadding(this.dpToPixels(56), this.dpToPixels(0), this.dpToPixels(0), this.dpToPixels(0));   // add padding left when navigation buttons hidden
+                    }
+                } else {
+                    edittext.setText(url);
+                }
+                // < ***** display title patch *****
                 edittext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
                 edittext.setImeOptions(EditorInfo.IME_ACTION_GO);
                 edittext.setInputType(InputType.TYPE_NULL); // Will not except input... Makes the text NON-EDITABLE
@@ -1136,10 +1166,20 @@ public class InAppBrowser extends CordovaPlugin {
                 newloc = "http://" + url;
             }
 
-            // Update the UI if we haven't already
-            if (!newloc.equals(edittext.getText().toString())) {
-                edittext.setText(newloc);
+            // ***** display title patch ***** >
+            if (showTitle) {
+                if ("".equals(titleCaption)) {
+                    edittext.setText("Loading...");
+                } else {
+                    edittext.setText(titleCaption);
+                }
+            } else {
+                // Update the UI if we haven't already
+                if (!newloc.equals(edittext.getText().toString())) {
+                    edittext.setText(newloc);
+                }
             }
+            // < ***** display title patch *****
 
             try {
                 JSONObject obj = new JSONObject();
@@ -1176,6 +1216,14 @@ public class InAppBrowser extends CordovaPlugin {
             } catch (JSONException ex) {
                 LOG.d(LOG_TAG, "Should never happen");
             }
+
+            // ***** display title patch ***** >
+            if (showTitle) {
+                if ("".equals(titleCaption)) {
+                    edittext.setText(view.getTitle());
+                }
+            }
+            // < ***** display title patch *****
         }
 
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
