@@ -130,6 +130,7 @@ instance, or the system browser.
     - __useWideViewPort__: Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport. When the value of the setting is `no`, the layout width is always set to the width of the WebView control in device-independent (CSS) pixels. When the value is `yes` and the page contains the viewport meta tag, the value of the width specified in the tag is used. If the page does not contain the tag or does not provide a width, then a wide viewport will be used. (defaults to `yes`).
     - __showtitle__: set to `yes` to have the browser to show the page title instead of the url address.
     - __titlecaption__: set to a string to show instead of the page title.
+    - __securewindow__: Set to `yes` to prevent Screenshots of the IAB window and make sure the IAB window is not visible in the previous apps view.
 
     iOS supports these additional options:
 

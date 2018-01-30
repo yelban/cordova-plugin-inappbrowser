@@ -109,6 +109,8 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String SHOW_TITLE = "showtitle";       // ***** display title patch ***** //
     private static final Boolean DEFAULT_SHOW_TITLE = false;    // ***** display title patch ***** //
     private static final String TITLE_CAPTION = "titlecaption"; // ***** display title patch ***** //
+    private static final String SECURE_WINDOW = "securewindow"; // ***** FLAG_SECURE support patch ***** //
+    private static final Boolean DEFAULT_SECURE_WINDOW = false; // ***** FLAG_SECURE support patch ***** //
 
     private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR, TITLE_CAPTION);  // ***** display title patch ***** //
 
@@ -137,8 +139,9 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean hideUrlBar = false;
     private boolean showFooter = false;
     private String footerColor = "";
-    private boolean showTitle = false;      // ***** display title patch ***** //
-    private String titleCaption = "";      // ***** display title patch ***** //
+    private boolean showTitle = false;          // ***** display title patch ***** //
+    private String titleCaption = "";           // ***** display title patch ***** //
+    private boolean showWindowSecure = false;   // ***** FLAG_SECURE support patch ***** //
 
     /**
      * Executes the request and returns PluginResult.
@@ -646,6 +649,14 @@ public class InAppBrowser extends CordovaPlugin {
             if (footerColorSet != null) {
                 footerColor = footerColorSet;
             }
+            // ***** FLAG_SECURE support patch ***** >
+            String showWindowSecureSet = features.get(SECURE_WINDOW);
+            if (showWindowSecureSet != null) {
+                showWindowSecure = showWindowSecureSet.equals("yes") ? true : false;
+            } else {
+                showWindowSecure = DEFAULT_SECURE_WINDOW;
+            }
+            // < ***** FLAG_SECURE support patch *****
         }
 
         final CordovaWebView thatWebView = this.webView;
@@ -724,9 +735,20 @@ public class InAppBrowser extends CordovaPlugin {
                 // Let's create the main dialog
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+                // ***** FLAG_SECURE support patch ***** >
+                // If the FLAG_SECURE is set on the Cordova Main Window, make sure it is set on the IAB Dialog as well
+                int flags = cordova.getActivity().getWindow().getAttributes().flags;
+                if ((flags & WindowManager.LayoutParams.FLAG_SECURE) != 0) {
+                    dialog.getWindow().addFlags(LayoutParams.FLAG_SECURE);
+                }
+                // < ***** FLAG_SECURE support patch *****
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setInAppBroswer(getInAppBrowser());
+                // ***** FLAG_SECURE support patch ***** >
+                if (showWindowSecure || cordovaWindowHasSecureFlag()) {
+                    dialog.getWindow().addFlags(LayoutParams.FLAG_SECURE);
+                }
 
                 // Main container layout
                 LinearLayout main = new LinearLayout(cordova.getActivity());
@@ -1339,4 +1361,12 @@ public class InAppBrowser extends CordovaPlugin {
             super.onReceivedHttpAuthRequest(view, handler, host, realm);
         }
     }
+
+    // ***** FLAG_SECURE support patch ***** >
+    private boolean cordovaWindowHasSecureFlag() {
+        int flags = cordova.getActivity().getWindow().getAttributes().flags;
+        return (flags & WindowManager.LayoutParams.FLAG_SECURE) != 0;
+    }
+    // < ***** FLAG_SECURE support patch *****
 }
+
