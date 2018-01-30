@@ -955,7 +955,13 @@
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
 
-    [self.spinner startAnimating];
+
+    // ***** hide spinner patch ***** > //
+    // NSLog(_browserOptions.hidespinner ? @"Yes" : @"No");
+    if(!_browserOptions.hidespinner) {
+        [self.spinner startAnimating];
+    }
+    // < ***** hide spinner patch ***** //
 
     return [self.navigationDelegate webViewDidStartLoad:theWebView];
 }
@@ -1078,6 +1084,7 @@
         self.toolbartranslucent = YES;
         self.showtitle = NO;        // ***** display title patch ***** //
         self.titlecaption = nil;    // ***** display title patch ***** //
+        self.hidespinner = NO;      // ***** hide spinner patch ***** //
     }
 
     return self;

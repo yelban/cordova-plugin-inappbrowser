@@ -67,8 +67,9 @@
 @property (nonatomic, assign) BOOL suppressesincrementalrendering;
 @property (nonatomic, assign) BOOL hidden;
 @property (nonatomic, assign) BOOL disallowoverscroll;
-@property (nonatomic, copy) NSString* showtitle;     // ***** display title patch ***** //
-@property (nonatomic, copy) NSString* titlecaption;     // ***** display title patch ***** //
+@property (nonatomic, assign) BOOL showtitle;       // ***** display title patch ***** //
+@property (nonatomic, copy) NSString* titlecaption; // ***** display title patch ***** //
+@property (nonatomic, assign) BOOL hidespinner;     // ***** hide spinner patch ***** //
 
 + (CDVInAppBrowserOptions*)parseOptions:(NSString*)options;
 
