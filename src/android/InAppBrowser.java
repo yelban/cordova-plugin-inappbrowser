@@ -749,7 +749,7 @@ public class InAppBrowser extends CordovaPlugin {
                 actionButtonContainer.setId(Integer.valueOf(1));
 
                 // Back button
-                ImageButton back = new ImageButton(cordova.getActivity());
+                final ImageButton back = new ImageButton(cordova.getActivity());    // ***** history buttons patch ***** //
                 RelativeLayout.LayoutParams backLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 backLayoutParams.addRule(RelativeLayout.ALIGN_LEFT);
                 back.setLayoutParams(backLayoutParams);
@@ -757,13 +757,17 @@ public class InAppBrowser extends CordovaPlugin {
                 back.setId(Integer.valueOf(2));
                 Resources activityRes = cordova.getActivity().getResources();
                 int backResId = activityRes.getIdentifier("ic_action_previous_item", "drawable", cordova.getActivity().getPackageName());
-                Drawable backIcon = activityRes.getDrawable(backResId);
+                // ***** history buttons patch ***** >
+                final Drawable backIcon = activityRes.getDrawable(backResId);
+                int backInactiveResId = activityRes.getIdentifier("ic_action_previous_item_inactive", "drawable", cordova.getActivity().getPackageName());
+                final Drawable backInactiveIcon = activityRes.getDrawable(backInactiveResId);
+                // < ***** history buttons patch *****
                 if (navigationButtonColor != "") back.setColorFilter(android.graphics.Color.parseColor(navigationButtonColor));
                 if (Build.VERSION.SDK_INT >= 16)
                     back.setBackground(null);
                 else
                     back.setBackgroundDrawable(null);
-                back.setImageDrawable(backIcon);
+                back.setImageDrawable(backInactiveIcon);    // ***** history buttons patch ***** //
                 back.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 back.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
                 if (Build.VERSION.SDK_INT >= 16)
@@ -776,20 +780,24 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Forward button
-                ImageButton forward = new ImageButton(cordova.getActivity());
+                final ImageButton forward = new ImageButton(cordova.getActivity()); // ***** history buttons patch ***** //
                 RelativeLayout.LayoutParams forwardLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 forwardLayoutParams.addRule(RelativeLayout.RIGHT_OF, 2);
                 forward.setLayoutParams(forwardLayoutParams);
                 forward.setContentDescription("Forward Button");
                 forward.setId(Integer.valueOf(3));
                 int fwdResId = activityRes.getIdentifier("ic_action_next_item", "drawable", cordova.getActivity().getPackageName());
-                Drawable fwdIcon = activityRes.getDrawable(fwdResId);
+                // ***** history buttons patch ***** >
+                final Drawable fwdIcon = activityRes.getDrawable(fwdResId);
+                int fwdInactiveResId = activityRes.getIdentifier("ic_action_next_item_inactive", "drawable", cordova.getActivity().getPackageName());
+                final Drawable fwdInactiveIcon = activityRes.getDrawable(fwdInactiveResId);
+                // < ***** history buttons patch *****
                 if (navigationButtonColor != "") forward.setColorFilter(android.graphics.Color.parseColor(navigationButtonColor));
                 if (Build.VERSION.SDK_INT >= 16)
                     forward.setBackground(null);
                 else
                     forward.setBackgroundDrawable(null);
-                forward.setImageDrawable(fwdIcon);
+                forward.setImageDrawable(fwdInactiveIcon);      // ***** history buttons patch ***** //
                 forward.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 forward.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
                 if (Build.VERSION.SDK_INT >= 16)
@@ -907,7 +915,27 @@ public class InAppBrowser extends CordovaPlugin {
                     }
 
                 });
-                WebViewClient client = new InAppBrowserClient(thatWebView, edittext);
+
+                // ***** history buttons patch ***** >
+                // History Change listener
+                HistoryChangeListener historyChangeListener = new HistoryChangeListener() {
+                    @Override
+                    public void onHistoryChanged() {
+                        if (inAppWebView.canGoBack()) {
+                            back.setImageDrawable(backIcon);
+                        } else {
+                            back.setImageDrawable(backInactiveIcon);
+                        }
+                        if (inAppWebView.canGoForward()) {
+                            forward.setImageDrawable(fwdIcon);
+                        } else {
+                            forward.setImageDrawable(fwdInactiveIcon);
+                        }
+                    }
+                };
+
+                WebViewClient client = new InAppBrowserClient(thatWebView, edittext, historyChangeListener);
+                // < ***** history buttons patch *****
                 inAppWebView.setWebViewClient(client);
                 WebSettings settings = inAppWebView.getSettings();
                 settings.setJavaScriptEnabled(true);
@@ -1062,12 +1090,19 @@ public class InAppBrowser extends CordovaPlugin {
         }
     }
 
+    // ***** history buttons patch ***** >
+    public interface HistoryChangeListener {
+        void onHistoryChanged();
+    }
+    // < ***** history buttons patch *****
+
     /**
      * The webview client receives notifications about appView
      */
     public class InAppBrowserClient extends WebViewClient {
         EditText edittext;
         CordovaWebView webView;
+        HistoryChangeListener historyChangeListener;    // ***** history buttons patch ***** //
 
         /**
          * Constructor.
@@ -1078,7 +1113,23 @@ public class InAppBrowser extends CordovaPlugin {
         public InAppBrowserClient(CordovaWebView webView, EditText mEditText) {
             this.webView = webView;
             this.edittext = mEditText;
+            this.historyChangeListener = null;      // ***** history buttons patch ***** //
         }
+
+        // ***** history buttons patch ***** >
+        /**
+         * Constructor.
+         * 
+         * @param webView
+         * @param mEditText
+         * @param historyChangeListener
+         */
+        public InAppBrowserClient(CordovaWebView webView, EditText mEditText, HistoryChangeListener historyChangeListener) {
+            this.webView = webView;
+            this.edittext = mEditText;
+            this.historyChangeListener = historyChangeListener;
+        }
+        // < ***** history buttons patch *****
 
         /**
          * Override the URL that should be loaded
@@ -1195,6 +1246,10 @@ public class InAppBrowser extends CordovaPlugin {
 
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+            // ***** history buttons patch ***** >
+            if (null != historyChangeListener)
+                historyChangeListener.onHistoryChanged();
+            // < ***** history buttons patch *****
 
             // CB-10395 InAppBrowser's WebView not storing cookies reliable to local device storage
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -1228,6 +1283,10 @@ public class InAppBrowser extends CordovaPlugin {
 
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
+            // ***** history buttons patch ***** >
+            if (null != historyChangeListener)
+                historyChangeListener.onHistoryChanged();
+            // < ***** history buttons patch *****
 
             try {
                 JSONObject obj = new JSONObject();
