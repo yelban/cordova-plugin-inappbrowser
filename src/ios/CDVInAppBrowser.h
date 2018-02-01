@@ -70,6 +70,7 @@
 @property (nonatomic, assign) BOOL showtitle;       // ***** display title patch ***** //
 @property (nonatomic, copy) NSString* titlecaption; // ***** display title patch ***** //
 @property (nonatomic, assign) BOOL hidespinner;     // ***** hide spinner patch ***** //
+@property (nonatomic, copy) NSString* navigationbuttoncolor;    // ***** ios navigation buttons color patch ***** //
 
 + (CDVInAppBrowserOptions*)parseOptions:(NSString*)options;
 
@@ -107,7 +108,8 @@
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
 - (void)showToolBar:(BOOL)show : (NSString *) toolbarPosition;
-- (void)setCloseButtonTitle:(NSString*)navigationtitle : (NSString*) colorString;     // ***** display title patch ***** //
+- (void)setCloseButtonTitle:(NSString*)navigationtitle : (NSString*) colorString;   // ***** display title patch ***** //
+- (void)setNavigationButtonColor:(NSString*) colorString;   // ***** ios navigation buttons color patch ***** //
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions;
 

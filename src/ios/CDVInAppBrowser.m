@@ -165,6 +165,14 @@
     if (browserOptions.closebuttoncaption != nil || browserOptions.closebuttoncolor != nil) {
         [self.inAppBrowserViewController setCloseButtonTitle:browserOptions.closebuttoncaption :browserOptions.closebuttoncolor];
     }
+    // ***** ios navigation buttons color patch ***** > //
+    // self.inAppBrowserViewController.closeButton.tintColor = [UIColor whiteColor];
+    // self.inAppBrowserViewController.backButton.tintColor = [UIColor whiteColor];
+    // self.inAppBrowserViewController.forwardButton.tintColor= [UIColor whiteColor];
+    if (browserOptions.navigationbuttoncolor != nil) {
+        [self.inAppBrowserViewController setNavigationButtonColor:browserOptions.navigationbuttoncolor];
+    }
+    // < ***** ios navigation buttons color patch ***** //
     // Set Presentation Style
     UIModalPresentationStyle presentationStyle = UIModalPresentationFullScreen; // default
     if (browserOptions.presentationstyle != nil) {
@@ -726,6 +734,25 @@
     [self.toolbar setItems:items];
 }
 
+// ***** ios navigation buttons color patch ***** > //
+- (void)setNavigationButtonColor:(NSString*) colorString
+{
+    // the advantage of using UIBarButtonSystemItemDone is the system will localize it for you automatically
+    // but, if you want to set this yourself, knock yourself out (we can't set the title for a system Done button, so we have to create a new one)
+    // self.backButton = nil;
+    // Initialize with title if title is set, otherwise the title will be 'Done' localized
+    // self.closeButton = title != nil ? [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStyleBordered target:self action:@selector(close)] : [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
+    // self.closeButton.enabled = YES;
+    // If color on closebutton is requested then initialize with that that color, otherwise use initialize with default
+    self.backButton.tintColor = colorString != nil ? [self colorFromHexString:colorString] : [UIColor colorWithRed:60.0 / 255.0 green:136.0 / 255.0 blue:230.0 / 255.0 alpha:1];
+    self.forwardButton.tintColor = colorString != nil ? [self colorFromHexString:colorString] : [UIColor colorWithRed:60.0 / 255.0 green:136.0 / 255.0 blue:230.0 / 255.0 alpha:1];
+
+    // NSMutableArray* items = [self.toolbar.items mutableCopy];
+    // [items replaceObjectAtIndex:0 withObject:self.closeButton];
+    // [self.toolbar setItems:items];
+}
+// < ***** ios navigation buttons color patch ***** //
+
 - (void)showLocationBar:(BOOL)show
 {
     CGRect locationbarFrame = self.addressLabel.frame;
@@ -1085,6 +1112,8 @@
         self.showtitle = NO;        // ***** display title patch ***** //
         self.titlecaption = nil;    // ***** display title patch ***** //
         self.hidespinner = NO;      // ***** hide spinner patch ***** //
+        self.navigationbuttoncolor = nil;   // ***** ios navigation buttons color patch ***** //
+
     }
 
     return self;

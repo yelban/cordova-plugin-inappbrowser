@@ -154,6 +154,7 @@ instance, or the system browser.
     - __toolbarposition__: Set to `top` or `bottom` (default is `bottom`). Causes the toolbar to be at the top or bottom of the window.
     - __showtitle__: set to `yes` to have the browser to show the page title in the toolbar.
     - __titlecaption__: set to a string to show instead of the page title.
+    - __navigationbuttoncolor__: set to a valid hex color string, for example: `#00ff00`, and it will change the color of both navigation buttons from default. Only has effect if not hidenavigationbuttons set to `yes`.
 
     Windows supports these additional options:
 
