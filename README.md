@@ -27,6 +27,21 @@ description: Open an in-app browser window.
 
 # cordova-plugin-inappbrowser
 
+## This repository added options as below
+
+### Both Android / iOS
+To have the browser to show the page title (or any specified string) instead of the url address in the toolbar.
+
+### Android
+HTML5 Video play in Fullscreen patch.
+To show state of the back and forward history buttons.
+Adds FLAG_SECURE support
+
+### iOS
+To change the color of both navigation buttons.
+Adds a new option to disabled the spinner which is displayed while loading.
+
+
 You can show helpful articles, videos, and web resources inside of your app. Users can view web pages without leaving your app.
 
 > To get a few ideas, check out the [sample](#sample) at the bottom of this page or go straight to the [reference](#reference) content.
@@ -155,13 +170,13 @@ instance, or the system browser.
     - __showtitle__: set to `yes` to have the browser to show the page title in the toolbar.
     - __titlecaption__: set to a string to show instead of the page title.
     - __navigationbuttoncolor__: set to a valid hex color string, for example: `#00ff00`, and it will change the color of both navigation buttons from default. Only has effect if not hidenavigationbuttons set to `yes`.
+    - __hidespinner__: Set to `yes` or `no` to change the visibility of the loading indicator (defaults to `no`).
 
     Windows supports these additional options:
 
     - __hidden__: set to `yes` to create the browser and load the page, but not show it. The loadstop event fires when loading is complete. Omit or set to `no` (default) to have the browser open and load normally.
     - __hardwareback__: works the same way as on Android platform.
     - __fullscreen__: set to `yes` to create the browser control without a border around it. Please note that if __location=no__ is also specified, there will be no control presented to user to close IAB window.
-    - __hidespinner__: Set to `yes` or `no` to change the visibility of the loading indicator (defaults to `no`).
 
 
 ### Supported Platforms
