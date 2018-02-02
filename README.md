@@ -33,12 +33,12 @@ description: Open an in-app browser window.
 To have the browser to show the page title (or any specified string) instead of the url address in the toolbar.
 
 #### Android
-HTML5 Video play in Fullscreen patch.
-To show state of the back and forward history buttons.
+HTML5 Video play in Fullscreen patch.  
+To show state of the back and forward history buttons.  
 Adds FLAG_SECURE support
 
 #### iOS
-To change the color of both navigation buttons.
+To change the color of both navigation buttons.  
 Adds a new option to disabled the spinner which is displayed while loading.
 *****
 
