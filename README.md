@@ -27,20 +27,20 @@ description: Open an in-app browser window.
 
 # cordova-plugin-inappbrowser
 
-## This repository added options as below
+### This repository added options as below
 
-### Both Android / iOS
+#### Both Android / iOS
 To have the browser to show the page title (or any specified string) instead of the url address in the toolbar.
 
-### Android
+#### Android
 HTML5 Video play in Fullscreen patch.
 To show state of the back and forward history buttons.
 Adds FLAG_SECURE support
 
-### iOS
+#### iOS
 To change the color of both navigation buttons.
 Adds a new option to disabled the spinner which is displayed while loading.
-
+*****
 
 You can show helpful articles, videos, and web resources inside of your app. Users can view web pages without leaving your app.
 
