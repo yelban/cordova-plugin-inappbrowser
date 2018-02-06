@@ -686,7 +686,8 @@
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.titleLabel.userInteractionEnabled = NO;
-    self.titleLabel.frame = CGRectMake(10, 0, self.view.frame.size.width-120, 39);
+    // self.titleLabel.frame = CGRectMake(10, 0, self.view.frame.size.width-120, 39);
+    self.titleLabel.frame = CGRectMake(10, 0, 220, 30);
     
     UIBarButtonItem *navigationtitle=[[UIBarButtonItem alloc] initWithCustomView:self.titleLabel];
 
